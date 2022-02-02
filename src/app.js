@@ -3,17 +3,22 @@ import "dotenv/config";
 import { Client } from "@notionhq/client";
 
 const app = express();
+
 //init client
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
+const database_id = process.env.DATABASE_ID;
+//
 
-const listDatabase = async () => {
-  const res = await notion.databases.list();
-  console.log(res);
-};
+(async () => {
+  const response = await notion.databases.retrieve({ database_id });
+  console.log(response);
 
-listDatabase();
+  /*      database_id,
+  const response = await notion.request({
+  }); */
+})();
 
 app.set("views", __dirname + "/views");
 app.set("view engine", "pug");
