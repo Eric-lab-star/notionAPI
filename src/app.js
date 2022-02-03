@@ -11,20 +11,45 @@ const notion = new Client({
 const database_id = process.env.DATABASE_ID;
 //
 
-(async () => {
-  const response = await notion.databases.retrieve({ database_id });
-  console.log(response);
+const notionData = async () => {
+  const { results } = await notion.databases.query({ database_id });
+  const infos = results.map((a) => {
+    return {
+      id: a.id,
+      Date: a.properties.Date.date.start,
+      Name: a.properties.Name.title[0].text.content,
+    };
+  });
+  return infos;
 
-  /*      database_id,
-  const response = await notion.request({
-  }); */
-})();
+  /* const payload = {
+    path: `databases/${database_id}/query`,
+    method: `POST`,
+  };
+  const { results } = await notion.request(payload);
 
+  const infos = results.map((a) => {
+    return {
+      id: a.id,
+      Date: a.properties.Date.date.start,
+      Name: a.properties.Name.title[0].text.content,
+    };
+  });
+  return infos; */
+};
+//
 app.set("views", __dirname + "/views");
 app.set("view engine", "pug");
-
-app.get("/", (req, res) => {
+//
+app.use(express.static("public"));
+//
+app.get("/", async (req, res) => {
   res.render("base");
+});
+//
+app.get("/infos", async (req, res) => {
+  const datas = await notionData();
+  res.json(datas);
 });
 
 app.listen(4000, () => {
